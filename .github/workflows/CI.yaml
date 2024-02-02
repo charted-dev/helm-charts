@@ -1,0 +1,98 @@
+# 🐻‍❄️🪻 helm-charts: Helm Charts available for Noelware's charted project
+# Copyright (c) 2023-2024 Noelware, LLC. <team@noelware.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+name: CI
+on:
+    workflow_dispatch: {}
+    push:
+        branches:
+            - 'issues/gh-**'
+            - 'feat/**'
+            - main
+        paths-ignore:
+            - '.github/**'
+            - '.coder/**'
+            - '.devcontainer/**'
+            - '.vscode/**'
+            - 'docs/**'
+            - 'scripts/**'
+            - '.*ignore'
+            - '**.md'
+            - renovate.json
+            - LICENSE
+    pull_request:
+        types: [opened, synchronize]
+        branches:
+            - main
+        paths-ignore:
+            - '.coder/**'
+            - '.devcontainer/**'
+            - '.vscode/**'
+            - 'docs/**'
+            - '.*ignore'
+            - '**.md'
+            - renovate.json
+            - LICENSE
+jobs:
+    ci:
+        name: helm test [${{matrix.chart}}; Kubernetes ${{matrix.kubernetes}}]
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                chart: [charted, emails]
+                kubernetes: [v1.26.13, v1.28.6, v1.29.1]
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v4
+
+            - name: Setup Helm
+              uses: Azure/setup-helm@v3
+
+            - name: Setup Minikube cluster
+              uses: medyagh/setup-minikube@v0.0.14
+              with:
+                  kubernetes-version: ${{matrix.kubernetes}}
+                  container-runtime: containerd
+                  minikube-version: 1.32.0
+                  start-args: '--delete-on-failure --profile=helm-test'
+                  memory: 4000m
+                  addons: ingress
+                  cache: true
+                  cpus: 4
+                  wait: true
+                  cni: bridge
+
+            - name: Lint
+              working-directory: ./charts/${{matrix.chart}}
+              run: helm lint
+
+            # - name: Install chart
+            #   working-directory: ./charts/${{matrix.chart}}
+            #   run: helm install ${{matrix.chart}} --namespace ci --create-namespace --wait --atomic
+
+            # - name: Test
+            #   working-directory: ./charts/${{matrix.chart}}
+            #   run: helm test
+
+            - name: Delete cluster (since we're done)
+              if: ${{ always() }}
+              run: minikube delete --profile=helm-test

@@ -1,0 +1,72 @@
+# 🐻‍❄️🪻 helm-charts: Helm Charts available for Noelware's charted project
+# Copyright (c) 2023-2024 Noelware, LLC. <team@noelware.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+kubeVersion: ">=1.26"
+description: "📦 Free, open source, and reliable Helm Chart registry made in Rust"
+apiVersion: v2
+
+# renovate: datasource=github-tags version=charted-dev/charted
+appVersion: 0.1.0-beta
+version: 0.1.0
+type: application
+home: https://charts.noelware.org
+name: charted-server
+icon: https://cdn.noelware.org/branding/charted.svg
+sources:
+  - https://github.com/charted-dev/charted
+  - https://github.com/charted-dev/helm-charts
+keywords:
+  - helm-chart
+  - chart-registry
+  - registry
+maintainers:
+  - name: Noelware, LLC.
+    email: team@noelware.org
+    url: https://noelware.org
+  - name: Noel Towa
+    email: cutie@floofy.dev
+    url: https://floofy.dev
+  - name: Spotlight
+    email: spotlight@joscomputing.space
+    url: https://joscomputing.space
+  - name: John Burke
+    email: winter@winterfox.tech
+    url: https://winterfox.tech
+annotations:
+  charts.noelware.org/licenses: Apache-2.0
+  charts.noelware.org/categories: Registry
+  charts.noelware.org/owners: |-
+    - user: noel
+      maintainer: Noel Towa
+    - organization: noelware
+      maintainer: Noelware, LLC.
+dependencies:
+  - name: common
+    version: 2.14.1
+    repository: oci://registry-1.docker.io/bitnamicharts
+  - name: postgresql
+    version: 13.4.4
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: external.postgresql.enabled
+  - name: redis
+    version: 18.12.0
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: external.redis.enabled
