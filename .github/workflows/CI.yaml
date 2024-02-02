@@ -59,7 +59,10 @@ jobs:
             fail-fast: true
             matrix:
                 chart: [charted, emails]
-                kubernetes: [v1.26.13, v1.28.6, v1.29.1]
+
+                # We do the latest version of the MSKV (minimum-supported-kubernetes-version),
+                # Stable and Latest releases to test
+                kubernetes: [v1.26.13, stable, latest]
         steps:
             - name: Checkout source code
               uses: actions/checkout@v4
