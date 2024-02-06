@@ -47,6 +47,9 @@ if ! [ -d "$DIR/.cache/bitnami-helm-gen" ]; then
     bun install "$DIR/.cache/bitnami-helm-gen"
 fi
 
+# Bun emits a `package.json` if .cache/bitnami-helm-gen exists, so we don't need this.
+[ -f "$DIR/package.json" ] && rm "$DIR/package.json"
+
 # TODO(@auguwu): auto generate this list (if we need to)
 charts=(
     "$DIR/charts/charted"

@@ -96,6 +96,6 @@ jobs:
             #   working-directory: ./charts/${{matrix.chart}}
             #   run: helm test
 
-            - name: Delete cluster (since we're done)
+            - name: Delete Minikube cluster
               if: ${{ always() }}
               run: minikube delete --profile=helm-test
